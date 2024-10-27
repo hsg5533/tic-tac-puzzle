@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Fifteen puzzle maker</title>
+    <link rel="shortcut icon" href="./img/icon.jpg" type="image/x-icon" />
+    <meta content="#c4cebb" name="theme-color" charset="UTF-8" />
+    <meta
+      name="description"
+      content="A simple implementation of the classic mini-game Fifteen Sliding Puzzle, using HTML5 DOM document elements and without using Canvas or third party libraries."
+    />
+    <meta
+      name="keywords"
+      content="15Puzzle, js, Open Source, HTML5, Sliding, web, base"
+    />
+    <meta name="author" content="Kirill Live" />
+    <link rel="stylesheet" href="./css/puzzle.css" />
+  </head>
+  <body>
+    <div id="fifteen"></div>
+    <!--element "fifteen" in which the game will take place-->
+    <div
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        box-shadow: 0px 2px 24px rgba(110, 95, 165, 0.25);
+        border-radius: 0 0 16px 0;
+        background-color: #fff;
+        width: 196px;
+      "
+    >
+      <div style="display: none; position: fixed">
+        <img id="art" src="" /><a id="dwonload"></a
+        ><input
+          id="img_file"
+          type="file"
+          accept="image/png,image/gif,image/jpeg,image/webp"
+        />
+      </div>
+      <div
+        style="
+          overflow: auto;
+          width: 180px;
+          max-height: 100vh;
+          height: 100%;
+          padding: 8px;
+        "
+      >
+        <table style="border-collapse: collapse; border: 1px">
+          <tbody>
+            <tr>
+              <td style="height: 48px" colspan="2">
+                <div class="button" onclick="img_file.click();">
+                  Load img file
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  width: 68px;
+                  height: 34px;
+                  padding-right: 8px;
+                  text-align: right;
+                "
+              >
+                Difficulty
+              </td>
+              <td>
+                <input
+                  onchange="setup.puzzle_fifteen.diff=this.value;fifteen_update();"
+                  value="300"
+                  class="input_text"
+                  type="text"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td style="height: 34px; padding-right: 8px; text-align: right">
+                Width
+              </td>
+              <td>
+                <input
+                  id="width"
+                  onchange="setup.puzzle_fifteen.size[0]=parseInt(this.value);fifteen_update();"
+                  value="1024"
+                  class="input_text"
+                  type="text"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td style="height: 34px; padding-right: 8px; text-align: right">
+                Height
+              </td>
+              <td>
+                <input
+                  id="height"
+                  onchange="setup.puzzle_fifteen.size[1]=parseInt(this.value);fifteen_update();"
+                  value="1281"
+                  class="input_text"
+                  type="text"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td style="height: 34px; padding-right: 8px; text-align: right">
+                Image fill
+              </td>
+              <td style="text-align: center">
+                <label class="switch">
+                  <input
+                    type="checkbox"
+                    onchange="setup.puzzle_fifteen.art.ratio=this.checked;fifteen_update();"
+                  />
+                  <span class="slider round"></span>
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td style="height: 34px; padding-right: 8px; text-align: right">
+                Grid width
+              </td>
+              <td>
+                <input
+                  id="grid_width"
+                  onchange="setup.puzzle_fifteen.grid[0]=parseInt(this.value);fifteen_update();"
+                  value="3"
+                  class="input_text"
+                  type="text"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td style="height: 34px; padding-right: 8px; text-align: right">
+                Grid height
+              </td>
+              <td>
+                <input
+                  id="grid_height"
+                  onchange="setup.puzzle_fifteen.grid[1]=parseInt(this.value);fifteen_update();"
+                  value="4"
+                  class="input_text"
+                  type="text"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td style="height: 34px; padding-right: 8px; text-align: right">
+                Move time
+              </td>
+              <td>
+                <input
+                  onchange="setup.puzzle_fifteen.time=this.value;fifteen_update();"
+                  value="0.4"
+                  class="input_text"
+                  type="text"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td style="height: 34px; padding-right: 8px; text-align: right">
+                Numbers
+              </td>
+              <td style="text-align: center">
+                <label class="switch">
+                  <input
+                    type="checkbox"
+                    onchange="setup.puzzle_fifteen.number=this.checked;fifteen_update();"
+                  />
+                  <span class="slider round"></span>
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td style="height: 34px; padding-right: 8px; text-align: right">
+                Puzzle fill
+              </td>
+              <td style="text-align: center">
+                <label class="switch">
+                  <input
+                    type="checkbox"
+                    onchange="setup.puzzle_fifteen.fill=this.checked;if(!this.checked){window.removeEventListener('resize',fifteen_resize,true);f.style.transform='scale(1)'};fifteen_update();"
+                    checked
+                  />
+                  <span class="slider round"></span>
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td style="height: 34px; padding-right: 8px; text-align: right">
+                Style blocks
+              </td>
+              <td>
+                <input
+                  id="slot_style"
+                  onchange="setup.puzzle_fifteen.style=this.value;fifteen_update();"
+                  class="input_text"
+                  type="text"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td style="height: 48px" colspan="2">
+                <div class="button" onclick="fifteen_update();">Refresh</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="height: 48px" colspan="2">
+                <div class="button" onclick="fifteen_build();">
+                  Create HTML game
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="height: 16px" colspan="2"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <script src="./js/main.js"></script>
+    <script src="./js/puzzle.js"></script>
+    <!--path to file engine-->
+  </body>
+</html>
